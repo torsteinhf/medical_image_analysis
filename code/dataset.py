@@ -87,9 +87,9 @@ def get_transforms(augment: bool) -> Compose:
         RandFlipd(keys=["image"], prob=0.5, spatial_axis=0),
         RandFlipd(keys=["image"], prob=0.5, spatial_axis=1),
         RandRotate90d(keys=["image"], prob=0.5, max_k=3),
-        RandGaussianNoised(),
-        RandShiftIntensityd(),
-        RandScaleIntensityd(),
+        RandGaussianNoised(keys=["image"], prob=0.3, mean=0.0, std=0.05),
+        RandShiftIntensityd(keys=["image"], offsets=0.1, prob=0.3),
+        RandScaleIntensityd(keys=["image"], factors=0.1, prob=0.3),
     ] if augment else []
 
     return Compose(base + aug + [ToTensord(keys=["image"])])
