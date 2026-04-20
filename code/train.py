@@ -8,6 +8,8 @@ from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.preprocessing import label_binarize
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR
+from monai.losses import FocalLoss
+from torch.optim import SGD
 
 from dataset import get_dataset, make_datalist, SEQUENCES
 from model import get_model
@@ -74,9 +76,11 @@ def main(args):
 
     model = get_model(in_channels=len(SEQUENCES), num_classes=3).to(device)
     optimizer = AdamW(model.parameters(), lr=args.lr)
+    #optimizer = SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=0.9)
     scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs)
     criterion = nn.CrossEntropyLoss(weight=class_weights)
-    #criterion = nn.CrossEntropyLoss(weight=class_weights)
+    # criterion = nn.CrossEntropyLoss()
+    #criterion = FocalLoss(weight=class_weights, gamma=0.5, to_onehot_y=True, use_softmax=True)
 
     best_auc = 0.0
     
@@ -98,7 +102,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs", type=int, default=100)
-    parser.add_argument("--batch_size", type=int, default=8)
-    parser.add_argument("--lr", type=float, default=1e-6)
+    parser.add_argument("--epochs", type=int, default=50)
+    parser.add_argument("--batch_size", type=int, default=10)
+    parser.add_argument("--lr", type=float, default=1e-5)
     main(parser.parse_args())

@@ -31,7 +31,7 @@ DATA_ROOT = Path("/datasets/tdt4265/ODELIA2025/data")
 # Post_2.nii.gz - after contrast injection (late)                                                  
 # Sub_1.nii.gz  - Post_1 minus Pre (highlights enhancement = suspicious areas)                     
 # T2.nii.gz     - different contrast, shows anatomy/fluid 
-SEQUENCES = ["Pre", "Post_1", "Post_2", "Sub_1", "T2"]
+SEQUENCES = ["Sub_1"]
 
 SPATIAL_SIZE = (96, 96, 96)
 # FOLD = 0  # which cross-validation fold to use for train/val split
@@ -42,6 +42,8 @@ INSTITUTIONS = ["CAM", "MHA", "RUMC", "UKA"] #RHS as test set
 # test split
 TRAIN_INSTITUTIONS = ["CAM", "RUMC", "UKA"]
 VAL_INSTITUTIONS = ["MHA"]
+# TRAIN_INSTITUTIONS = ["CAM", "MHA"]
+# VAL_INSTITUTIONS = ["RUMC", "UKA"]
 
 def load_all_annotations() -> pd.DataFrame:
     sub_tables = []
