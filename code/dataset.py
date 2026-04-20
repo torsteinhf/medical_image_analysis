@@ -71,7 +71,7 @@ def make_datalist(split: str) -> list[dict]:
 def get_transforms(augment: bool) -> Compose:
     base = [
         LoadImaged(keys=["image"], image_only=True, ensure_channel_first=True),
-        ScaleIntensityRangePercentilesd(keys=["image"], lower=1, upper=99, b_min=0.0, b_max=1.0, clip=True),
+        ScaleIntensityRangePercentilesd(keys=["image"], lower=1, upper=99, b_min=0.0, b_max=1.0, clip=True, channel_wise=True),
         CropForegroundd(keys=["image"], source_key="image"),
         Resized(keys=["image"], spatial_size=SPATIAL_SIZE),
     ]

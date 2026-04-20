@@ -1,5 +1,6 @@
 import argparse
 
+import numpy as np
 import torch
 import torch.nn as nn
 from monai.data.dataloader import DataLoader
@@ -8,7 +9,7 @@ from sklearn.preprocessing import label_binarize
 from torch.optim import Adam
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
-from dataset import get_dataset, SEQUENCES
+from dataset import get_dataset, make_datalist, SEQUENCES
 from model import get_model
 
 
@@ -41,7 +42,6 @@ def evaluate(model, loader, device):
         all_probs.extend(probs)
         all_labels.extend(labels)
 
-    import numpy as np
     y_true = label_binarize(all_labels, classes=[0, 1, 2])  # one-hot [N, 3]
     y_pred = np.array(all_probs)                            # [N, 3]
 
@@ -68,10 +68,15 @@ def main(args):
     train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False, num_workers=0)
 
+    train_labels = [item["label"] for item in make_datalist("train")]
+    counts = np.bincount(train_labels, minlength=3).astype(float)
+    class_weights = torch.tensor(len(train_labels) / (3 * counts), dtype=torch.float32).to(device)
+    print(f"Class weights (normal/benign/malignant): {class_weights.tolist()}")
+
     model = get_model(in_channels=len(SEQUENCES), num_classes=3).to(device)
     optimizer = Adam(model.parameters(), lr=args.lr)
     scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs)
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(weight=class_weights)
 
     best_score = 0.0
     for epoch in range(1, args.epochs + 1):
@@ -83,9 +88,9 @@ def main(args):
         print(f"Epoch {epoch:03d} | loss: {train_loss:.4f} | AUC: {val_auc:.4f} | Spec@90Sens: {val_spec:.4f} | Sens@90Spec: {val_sens:.4f} | Score: {score:.4f}")
 
         if score > best_score:
-            best_score = val_auc
+            best_score = score
             torch.save(model.state_dict(), "best_model.pth")
-            print(f"  -> Saved best model (AUC {best_score:.4f})")
+            print(f"  -> Saved best model (score {best_score:.4f})")
 
     print(f"\nBest val AUC: {best_score:.4f}")
 
