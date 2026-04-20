@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pandas as pd
-from monai.data.dataset import Dataset
+from monai.data import CacheDataset
 from monai.transforms import (
     Compose,
     CropForegroundd,
@@ -22,9 +22,10 @@ SPLIT_CSV = Path(__file__).parent.parent / "odelia_2025_data" / "split_unilatera
 # Post_2.nii.gz - after contrast injection (late)                                                  
 # Sub_1.nii.gz  - Post_1 minus Pre (highlights enhancement = suspicious areas)                     
 # T2.nii.gz     - different contrast, shows anatomy/fluid 
-SEQUENCES = ["Sub_1"]
+SEQUENCES = ["Sub_1", "T2"]
 
-SPATIAL_SIZE = (64, 64, 64)
+SPATIAL_SIZE = (96, 96, 96)
+FOLD = 0  # which cross-validation fold to use for train/val split
 
 # return merged annotation + metadata for each UID
 # result is df with columns: UID, Fold, Split, Institution, Lesion
@@ -45,7 +46,11 @@ def load_metadata() -> pd.DataFrame:
 
 def make_datalist(split: str) -> list[dict]:
     df = load_metadata()
-    subset = df[df["Split"] == split]
+    # test rows have no fold assignment — use all; train/val must match FOLD to avoid duplication
+    if split == "test":
+        subset = df[df["Split"] == split].drop_duplicates("UID")
+    else:
+        subset = df[(df["Split"] == split) & (df["Fold"] == FOLD)]
 
     items = []
     for _, row in subset.iterrows():
@@ -54,10 +59,8 @@ def make_datalist(split: str) -> list[dict]:
         folder = DATA_ROOT / institution / "data_unilateral" / uid
 
         image_paths = [str(folder / f"{seq}.nii.gz") for seq in SEQUENCES]
-        # Filter to sequences that actually exist on disk
-        image_paths = [p for p in image_paths if Path(p).exists()]
-
-        if not image_paths:
+        # Skip cases where any sequence is missing (avoids variable channel counts)
+        if not all(Path(p).exists() for p in image_paths):
             continue
 
         items.append({"image": image_paths, "label": int(row["Lesion"])})
@@ -82,8 +85,10 @@ def get_transforms(augment: bool) -> Compose:
     return Compose(base + aug + [ToTensord(keys=["image"])])
 
 
-def get_dataset(split: str) -> Dataset:
+def get_dataset(split: str) -> CacheDataset:
     datalist = make_datalist(split)
     augment = split == "train"
     transforms = get_transforms(augment)
-    return Dataset(data=datalist, transform=transforms)
+    # cache_rate=1.0 keeps all samples in RAM; MONAI caches only up to the
+    # first random transform, so augmentation still varies each epoch
+    return CacheDataset(data=datalist, transform=transforms, cache_rate=1.0, num_workers=0)

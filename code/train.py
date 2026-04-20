@@ -73,20 +73,21 @@ def main(args):
     scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs)
     criterion = nn.CrossEntropyLoss()
 
-    best_auc = 0.0
+    best_score = 0.0
     for epoch in range(1, args.epochs + 1):
         train_loss = train_epoch(model, train_loader, optimizer, criterion, device)
         val_auc, val_spec, val_sens = evaluate(model, val_loader, device)
+        score = (val_auc + val_spec + val_sens) / 3
         scheduler.step()
 
-        print(f"Epoch {epoch:03d} | loss: {train_loss:.4f} | AUC: {val_auc:.4f} | Spec@90Sens: {val_spec:.4f} | Sens@90Spec: {val_sens:.4f}")
+        print(f"Epoch {epoch:03d} | loss: {train_loss:.4f} | AUC: {val_auc:.4f} | Spec@90Sens: {val_spec:.4f} | Sens@90Spec: {val_sens:.4f} | Score: {score:.4f}")
 
-        if val_auc > best_auc:
-            best_auc = val_auc
+        if score > best_score:
+            best_score = val_auc
             torch.save(model.state_dict(), "best_model.pth")
-            print(f"  -> Saved best model (AUC {best_auc:.4f})")
+            print(f"  -> Saved best model (AUC {best_score:.4f})")
 
-    print(f"\nBest val AUC: {best_auc:.4f}")
+    print(f"\nBest val AUC: {best_score:.4f}")
 
     # Final test evaluation
     test_ds = get_dataset("test")
@@ -99,7 +100,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs", type=int, default=50)
+    parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--batch_size", type=int, default=2)
     parser.add_argument("--lr", type=float, default=1e-4)
     main(parser.parse_args())
