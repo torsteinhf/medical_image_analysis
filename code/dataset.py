@@ -53,15 +53,15 @@ def load_all_annotations() -> pd.DataFrame:
 def make_datalist(split: str, seed=42) -> list[dict]:
     annotations = load_all_annotations()
     # for stratifying, at "breast level"
-    # train_uids, val_uids = train_test_split(
-    #     annotations["UID"],
-    #     test_size=0.2,
-    #     stratify=annotations["Lesion"],
-    #     random_state=seed
-    # )
-    train_uids = annotations[annotations["Institution"].isin(TRAIN_INSTITUTIONS)]
-    val_uids = annotations[annotations["Institution"].isin(VAL_INSTITUTIONS)]
-    uid_set = set(train_uids["UID"]) if split == "train" else set(val_uids["UID"])
+    train_uids, val_uids = train_test_split(
+        annotations["UID"],
+        test_size=0.2,
+        stratify=annotations["Lesion"],
+        random_state=seed
+    )
+    # train_uids = annotations[annotations["Institution"].isin(TRAIN_INSTITUTIONS)]["UID"]
+    # val_uids = annotations[annotations["Institution"].isin(VAL_INSTITUTIONS)]["UID"]
+    uid_set = set(train_uids) if split == "train" else set(val_uids)
     subset = annotations[annotations["UID"].isin(uid_set)]
     items = []
     for _, row in subset.iterrows():
