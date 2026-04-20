@@ -6,12 +6,11 @@ import torch.nn as nn
 from monai.data.dataloader import DataLoader
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.preprocessing import label_binarize
-from torch.optim import Adam
+from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
 from dataset import get_dataset, make_datalist, SEQUENCES
 from model import get_model
-
 
 def train_epoch(model, loader, optimizer, criterion, device):
     model.train()
@@ -74,11 +73,13 @@ def main(args):
     print(f"Class weights (normal/benign/malignant): {class_weights.tolist()}")
 
     model = get_model(in_channels=len(SEQUENCES), num_classes=3).to(device)
-    optimizer = Adam(model.parameters(), lr=args.lr)
+    optimizer = AdamW(model.parameters(), lr=args.lr)
     scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs)
+    # criterion = nn.CrossEntropyLoss(weight=class_weights)
     criterion = nn.CrossEntropyLoss(weight=class_weights)
 
-    best_score = 0.0
+    best_auc = 0.0
+    
     for epoch in range(1, args.epochs + 1):
         train_loss = train_epoch(model, train_loader, optimizer, criterion, device)
         val_auc, val_spec, val_sens = evaluate(model, val_loader, device)
@@ -87,25 +88,17 @@ def main(args):
 
         print(f"Epoch {epoch:03d} | loss: {train_loss:.4f} | AUC: {val_auc:.4f} | Spec@90Sens: {val_spec:.4f} | Sens@90Spec: {val_sens:.4f} | Score: {score:.4f}")
 
-        if score > best_score:
-            best_score = score
+        if val_auc > best_auc:
+            best_auc = val_auc
             torch.save(model.state_dict(), "best_model.pth")
-            print(f"  -> Saved best model (score {best_score:.4f})")
+            print(f"  -> Saved best model (score {best_auc:.4f})")
 
-    print(f"\nBest val AUC: {best_score:.4f}")
-
-    # Final test evaluation
-    test_ds = get_dataset("test")
-    test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False, num_workers=0)
-    model.load_state_dict(torch.load("best_model.pth", map_location=device))
-    test_auc, test_spec, test_sens = evaluate(model, test_loader, device)
-    score = (test_auc + test_spec + test_sens) / 3
-    print(f"Test AUC: {test_auc:.4f} | Spec@90Sens: {test_spec:.4f} | Sens@90Spec: {test_sens:.4f} | Score: {score:.4f}")
+    print(f"\nBest val AUC: {best_auc:.4f}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs", type=int, default=100)
-    parser.add_argument("--batch_size", type=int, default=2)
+    parser.add_argument("--epochs", type=int, default=50)
+    parser.add_argument("--batch_size", type=int, default=16)
     parser.add_argument("--lr", type=float, default=1e-4)
     main(parser.parse_args())

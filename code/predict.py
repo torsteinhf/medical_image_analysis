@@ -16,7 +16,9 @@ def make_rsh_datalist() -> list[dict]:
     import pandas as pd
     df = pd.read_csv(RSH_SPLIT)
     items = []
-    for uid in df["UID"]:
+    for _, row in df.iterrows():
+        # if row["Split"] != "test": continue # to reduce to 34 datapoints
+        uid = row["UID"]
         folder = RSH_ROOT / "data_unilateral" / uid
         image_paths = [str(folder / f"{seq}.nii.gz") for seq in SEQUENCES]
         if not all(Path(p).exists() for p in image_paths):
