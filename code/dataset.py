@@ -10,6 +10,9 @@ from monai.transforms import (
     RandRotate90d,
     Resized,
     ScaleIntensityRangePercentilesd,
+    RandGaussianNoised, 
+    RandShiftIntensityd,
+    RandScaleIntensityd,
     ToTensord,
 )
 from sklearn.model_selection import train_test_split
@@ -84,6 +87,9 @@ def get_transforms(augment: bool) -> Compose:
         RandFlipd(keys=["image"], prob=0.5, spatial_axis=0),
         RandFlipd(keys=["image"], prob=0.5, spatial_axis=1),
         RandRotate90d(keys=["image"], prob=0.5, max_k=3),
+        RandGaussianNoised(),
+        RandShiftIntensityd(),
+        RandScaleIntensityd(),
     ] if augment else []
 
     return Compose(base + aug + [ToTensord(keys=["image"])])
