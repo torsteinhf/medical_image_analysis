@@ -13,6 +13,8 @@ from monai.transforms import (
     RandGaussianNoised, 
     RandShiftIntensityd,
     RandScaleIntensityd,
+    RandZoomd,
+    RandAffined,
     ToTensord,
 )
 from sklearn.model_selection import train_test_split
@@ -31,7 +33,9 @@ DATA_ROOT = Path("/datasets/tdt4265/ODELIA2025/data")
 # Post_2.nii.gz - after contrast injection (late)                                                  
 # Sub_1.nii.gz  - Post_1 minus Pre (highlights enhancement = suspicious areas)                     
 # T2.nii.gz     - different contrast, shows anatomy/fluid 
+#SEQUENCES = ["Sub_1", "Post_1", "T2"]
 SEQUENCES = ["Sub_1"]
+#SEQUENCES = ["Pre", "Post_1", "Post_2", "Sub_1", "T2"]
 
 SPATIAL_SIZE = (96, 96, 96)
 # FOLD = 0  # which cross-validation fold to use for train/val split
@@ -40,8 +44,8 @@ SPATIAL_SIZE = (96, 96, 96)
 INSTITUTIONS = ["CAM", "MHA", "RUMC", "UKA"] #RHS as test set
 
 # test split
-TRAIN_INSTITUTIONS = ["CAM", "RUMC", "UKA"]
-VAL_INSTITUTIONS = ["MHA"]
+TRAIN_INSTITUTIONS = ["CAM"]
+VAL_INSTITUTIONS = ["MHA", "RUMC", "UKA"]
 # TRAIN_INSTITUTIONS = ["CAM", "MHA"]
 # VAL_INSTITUTIONS = ["RUMC", "UKA"]
 
@@ -58,14 +62,14 @@ def load_all_annotations() -> pd.DataFrame:
 def make_datalist(split: str, seed=42) -> list[dict]:
     annotations = load_all_annotations()
     # for stratifying, at "breast level"
-    train_uids, val_uids = train_test_split(
-        annotations["UID"],
-        test_size=0.2,
-        stratify=annotations["Lesion"],
-        random_state=seed
-    )
-    # train_uids = annotations[annotations["Institution"].isin(TRAIN_INSTITUTIONS)]["UID"]
-    # val_uids = annotations[annotations["Institution"].isin(VAL_INSTITUTIONS)]["UID"]
+    # train_uids, val_uids = train_test_split(
+    #     annotations["UID"],
+    #     test_size=0.2,
+    #     stratify=annotations["Lesion"],
+    #     random_state=seed
+    # )
+    train_uids = annotations[annotations["Institution"].isin(TRAIN_INSTITUTIONS)]["UID"]
+    val_uids = annotations[annotations["Institution"].isin(VAL_INSTITUTIONS)]["UID"]
     uid_set = set(train_uids) if split == "train" else set(val_uids)
     subset = annotations[annotations["UID"].isin(uid_set)]
     items = []
@@ -88,10 +92,13 @@ def get_transforms(augment: bool) -> Compose:
     aug = [
         RandFlipd(keys=["image"], prob=0.5, spatial_axis=0),
         RandFlipd(keys=["image"], prob=0.5, spatial_axis=1),
+        RandFlipd(keys=["image"], prob=0.5, spatial_axis=2),
         RandRotate90d(keys=["image"], prob=0.5, max_k=3),
         RandGaussianNoised(keys=["image"], prob=0.3, mean=0.0, std=0.05),
         RandShiftIntensityd(keys=["image"], offsets=0.1, prob=0.3),
         RandScaleIntensityd(keys=["image"], factors=0.1, prob=0.3),
+        RandZoomd(keys=["image"], prob=0.4, min_zoom=0.85, max_zoom=1.15),
+        RandAffined(keys=["image"], prob=0.3, rotate_range=(0.2,0.2,0.2), translate_range=(5,5,5), scale_range=(0.1,0.1,0.1), mode="bilinear")
     ] if augment else []
 
     return Compose(base + aug + [ToTensord(keys=["image"])])

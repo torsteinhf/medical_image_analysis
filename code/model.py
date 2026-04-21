@@ -4,7 +4,7 @@ from monai.networks.nets.densenet import DenseNet121
 from monai.networks.nets import resnet34
 from monai.networks.nets import resnet10
 
-MODEL_TYPE = "resnet10pretrained" # densenet121, resnet34, resnet34pretrained, resnet10
+MODEL_TYPE = "densenet121" # densenet121, resnet34, resnet34pretrained, resnet10, resnet10pretrained
 
 class ResNet34Pretrained(nn.Module):
     def __init__(self, num_classes: int = 3):

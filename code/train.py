@@ -66,8 +66,8 @@ def main(args):
     val_ds = get_dataset("val")
     print(f"Train: {len(train_ds)} | Val: {len(val_ds)}")
 
-    train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True, num_workers=0)
-    val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False, num_workers=0)
+    train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True, num_workers=4)
+    val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False, num_workers=4)
 
     train_labels = [item["label"] for item in make_datalist("train")]
     counts = np.bincount(train_labels, minlength=3).astype(float)
@@ -75,34 +75,47 @@ def main(args):
     print(f"Class weights (normal/benign/malignant): {class_weights.tolist()}")
 
     model = get_model(in_channels=len(SEQUENCES), num_classes=3).to(device)
-    optimizer = AdamW(model.parameters(), lr=args.lr)
+    optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=1e-5)
     #optimizer = SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=0.9)
-    scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs)
-    criterion = nn.CrossEntropyLoss(weight=class_weights)
+    scheduler = CosineAnnealingLR(optimizer, T_max=120)
+    # criterion = nn.CrossEntropyLoss(weight=class_weights)
     # criterion = nn.CrossEntropyLoss()
-    #criterion = FocalLoss(weight=class_weights, gamma=0.5, to_onehot_y=True, use_softmax=True)
+    criterion = FocalLoss(weight=class_weights, gamma=1.0, to_onehot_y=True, use_softmax=True)
 
     best_auc = 0.0
     
+    log_rows = []
+    
     for epoch in range(1, args.epochs + 1):
         train_loss = train_epoch(model, train_loader, optimizer, criterion, device)
+        train_auc, train_spec, train_sens = evaluate(model, train_loader, device)
         val_auc, val_spec, val_sens = evaluate(model, val_loader, device)
-        score = (val_auc + val_spec + val_sens) / 3
+        train_score = (train_auc + train_spec + train_sens) / 3
+        val_score = (val_auc + val_spec + val_sens) / 3
         scheduler.step()
 
-        print(f"Epoch {epoch:03d} | loss: {train_loss:.4f} | AUC: {val_auc:.4f} | Spec@90Sens: {val_spec:.4f} | Sens@90Spec: {val_sens:.4f} | Score: {score:.4f}")
+        print(f"Epoch {epoch:03d} | loss: {train_loss:.4f} | AUC: {train_auc:.4f} | Val Spec@90Sens: {train_spec:.4f} | Val Sens@90Spec: {train_sens:.4f} | Val Score: {train_score:.4f}        \
+              | Val AUC: {val_auc:.4f} | Val Spec@90Sens: {val_spec:.4f} | Val Sens@90Spec: {val_sens:.4f} | Val Score: {val_score:.4f}")
+        
+        log_rows.append({"epoch":epoch, "loss":train_loss, "train_auc":train_auc, "train_spec":train_spec, "train_sens":train_sens, "val_auc":val_auc, "val_spec":val_spec, "val_sens":val_sens})
 
         if val_auc > best_auc:
             best_auc = val_auc
             torch.save(model.state_dict(), "best_model.pth")
             print(f"  -> Saved best model (score {best_auc:.4f})")
+    
+    import csv
+    with open("training_log.csv", "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["epoch", "loss", "train_auc", "train_spec", "train_sens", "val_auc", "val_spec", "val_sens"])
+        writer.writeheader()
+        writer.writerows(log_rows)
 
     print(f"\nBest val AUC: {best_auc:.4f}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs", type=int, default=50)
-    parser.add_argument("--batch_size", type=int, default=10)
+    parser.add_argument("--epochs", type=int, default=20)
+    parser.add_argument("--batch_size", type=int, default=6)
     parser.add_argument("--lr", type=float, default=1e-5)
     main(parser.parse_args())

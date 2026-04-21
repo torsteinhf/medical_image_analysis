@@ -367,3 +367,110 @@ Sensitivity @ 90% specificity: 0.3030
 Specificity @ 90% sensitivity: 0.3182
 
 Aggregated Score (used for leaderboard): 0.4495
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+resnet10 pretrained
+CAM only sequence
+heavy augmented
+val: rest of institutions
+supposed to simulate generalizations to RHS
+
+Train: 374 | Val: 104
+Class weights (normal/benign/malignant): [0.4583333432674408, 3.6666667461395264, 1.8333333730697632]
+Epoch 001 | loss: 0.2542 | AUC: 0.4647 | Val Spec@90Sens: 0.0361 | Val Sens@90Spec: 0.1738 | Val Score: 0.2249                      | Val AUC: 0.6568 | Val Spec@90Sens: 0.2740 | Val Sens@90Spec: 0.2019 | Val Score: 0.3776
+  -> Saved best model (score 0.6568)
+Epoch 002 | loss: 0.2505 | AUC: 0.7367 | Val Spec@90Sens: 0.4144 | Val Sens@90Spec: 0.3449 | Val Score: 0.4987                      | Val AUC: 0.6773 | Val Spec@90Sens: 0.3462 | Val Sens@90Spec: 0.1923 | Val Score: 0.4053
+  -> Saved best model (score 0.6773)
+Epoch 003 | loss: 0.2516 | AUC: 0.5338 | Val Spec@90Sens: 0.2594 | Val Sens@90Spec: 0.1524 | Val Score: 0.3152                      | Val AUC: 0.6906 | Val Spec@90Sens: 0.3269 | Val Sens@90Spec: 0.3365 | Val Score: 0.4514
+  -> Saved best model (score 0.6906)
+Epoch 004 | loss: 0.2481 | AUC: 0.5333 | Val Spec@90Sens: 0.1123 | Val Sens@90Spec: 0.0160 | Val Score: 0.2206                      | Val AUC: 0.6090 | Val Spec@90Sens: 0.1106 | Val Sens@90Spec: 0.2212 | Val Score: 0.3136
+Epoch 005 | loss: 0.2547 | AUC: 0.5947 | Val Spec@90Sens: 0.2086 | Val Sens@90Spec: 0.1872 | Val Score: 0.3301                      | Val AUC: 0.6569 | Val Spec@90Sens: 0.2596 | Val Sens@90Spec: 0.2212 | Val Score: 0.3792
+Epoch 006 | loss: 0.2501 | AUC: 0.4515 | Val Spec@90Sens: 0.1016 | Val Sens@90Spec: 0.1417 | Val Score: 0.2316                      | Val AUC: 0.4346 | Val Spec@90Sens: 0.0529 | Val Sens@90Spec: 0.0865 | Val Score: 0.1913
+Epoch 007 | loss: 0.2383 | AUC: 0.6303 | Val Spec@90Sens: 0.2099 | Val Sens@90Spec: 0.2353 | Val Score: 0.3585                      | Val AUC: 0.6422 | Val Spec@90Sens: 0.1298 | Val Sens@90Spec: 0.2885 | Val Score: 0.3535
+Epoch 008 | loss: 0.2508 | AUC: 0.6904 | Val Spec@90Sens: 0.3944 | Val Sens@90Spec: 0.2193 | Val Score: 0.4347                      | Val AUC: 0.7050 | Val Spec@90Sens: 0.1923 | Val Sens@90Spec: 0.3365 | Val Score: 0.4113
+  -> Saved best model (score 0.7050)
+Epoch 009 | loss: 0.2482 | AUC: 0.4073 | Val Spec@90Sens: 0.0655 | Val Sens@90Spec: 0.0241 | Val Score: 0.1656                      | Val AUC: 0.3343 | Val Spec@90Sens: 0.0529 | Val Sens@90Spec: 0.0160 | Val Score: 0.1344
+Epoch 010 | loss: 0.2413 | AUC: 0.7472 | Val Spec@90Sens: 0.3783 | Val Sens@90Spec: 0.2968 | Val Score: 0.4741                      | Val AUC: 0.4287 | Val Spec@90Sens: 0.1298 | Val Sens@90Spec: 0.0096 | Val Score: 0.1894
+Epoch 011 | loss: 0.2424 | AUC: 0.5358 | Val Spec@90Sens: 0.1965 | Val Sens@90Spec: 0.1230 | Val Score: 0.2851                      | Val AUC: 0.3670 | Val Spec@90Sens: 0.1298 | Val Sens@90Spec: 0.0385 | Val Score: 0.1784
+Epoch 012 | loss: 0.2376 | AUC: 0.6933 | Val Spec@90Sens: 0.3810 | Val Sens@90Spec: 0.2406 | Val Score: 0.4383                      | Val AUC: 0.6869 | Val Spec@90Sens: 0.1298 | Val Sens@90Spec: 0.3365 | Val Score: 0.3844
+Epoch 013 | loss: 0.2370 | AUC: 0.4993 | Val Spec@90Sens: 0.1524 | Val Sens@90Spec: 0.0642 | Val Score: 0.2386                      | Val AUC: 0.3586 | Val Spec@90Sens: 0.0962 | Val Sens@90Spec: 0.0288 | Val Score: 0.1612
+Epoch 014 | loss: 0.2427 | AUC: 0.7077 | Val Spec@90Sens: 0.3890 | Val Sens@90Spec: 0.2647 | Val Score: 0.4538                      | Val AUC: 0.4347 | Val Spec@90Sens: 0.1346 | Val Sens@90Spec: 0.0288 | Val Score: 0.1994
+
+Results:
+
+AUC (micro-averaged): 0.7419
+
+Sensitivity @ 90% specificity: 0.3788
+
+Specificity @ 90% sensitivity: 0.2955
+
+Aggregated Score (used for leaderboard): 0.4721
+
+
+
+
+
+
+
+
+
+
+
+
+
+resnet 10 pretrained, focal loss, 
+CAM only sequence
+heavy augmented
+val: rest of institutions
+
+Train: 374 | Val: 104
+Class weights (normal/benign/malignant): [0.4583333432674408, 3.6666667461395264, 1.8333333730697632]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Epoch 001 | loss: 0.2717 | AUC: 0.7839 | Val Spec@90Sens: 0.2152 | Val Sens@90Spec: 0.5428 | Val Score: 0.5140                      | Val AUC: 0.5635 | Val Spec@90Sens: 0.3077 | Val Sens@90Spec: 0.0673 | Val Score: 0.3128
+  -> Saved best model (score 0.5635)
+Epoch 002 | loss: 0.2549 | AUC: 0.7813 | Val Spec@90Sens: 0.2674 | Val Sens@90Spec: 0.4733 | Val Score: 0.5073                      | Val AUC: 0.5507 | Val Spec@90Sens: 0.3029 | Val Sens@90Spec: 0.0577 | Val Score: 0.3037
+Epoch 003 | loss: 0.2579 | AUC: 0.7715 | Val Spec@90Sens: 0.2955 | Val Sens@90Spec: 0.4599 | Val Score: 0.5090                      | Val AUC: 0.5458 | Val Spec@90Sens: 0.2981 | Val Sens@90Spec: 0.0673 | Val Score: 0.3037
+Epoch 004 | loss: 0.2474 | AUC: 0.7694 | Val Spec@90Sens: 0.3289 | Val Sens@90Spec: 0.4947 | Val Score: 0.5310                      | Val AUC: 0.5867 | Val Spec@90Sens: 0.3029 | Val Sens@90Spec: 0.0577 | Val Score: 0.3158
+  -> Saved best model (score 0.5867)
+Epoch 005 | loss: 0.2422 | AUC: 0.7370 | Val Spec@90Sens: 0.3048 | Val Sens@90Spec: 0.4439 | Val Score: 0.4952                      | Val AUC: 0.5373 | Val Spec@90Sens: 0.3029 | Val Sens@90Spec: 0.0577 | Val Score: 0.2993
+Epoch 006 | loss: 0.2416 | AUC: 0.7082 | Val Spec@90Sens: 0.3235 | Val Sens@90Spec: 0.4037 | Val Score: 0.4785                      | Val AUC: 0.7256 | Val Spec@90Sens: 0.3510 | Val Sens@90Spec: 0.3365 | Val Score: 0.4710
+  -> Saved best model (score 0.7256)
+Epoch 007 | loss: 0.2468 | AUC: 0.7477 | Val Spec@90Sens: 0.3770 | Val Sens@90Spec: 0.4759 | Val Score: 0.5335                      | Val AUC: 0.7037 | Val Spec@90Sens: 0.3269 | Val Sens@90Spec: 0.2981 | Val Score: 0.4429
+Epoch 008 | loss: 0.2389 | AUC: 0.6539 | Val Spec@90Sens: 0.2727 | Val Sens@90Spec: 0.2594 | Val Score: 0.3953                      | Val AUC: 0.5927 | Val Spec@90Sens: 0.3221 | Val Sens@90Spec: 0.0673 | Val Score: 0.3274
+Epoch 009 | loss: 0.2394 | AUC: 0.6334 | Val Spec@90Sens: 0.2206 | Val Sens@90Spec: 0.2246 | Val Score: 0.3595                      | Val AUC: 0.5389 | Val Spec@90Sens: 0.3173 | Val Sens@90Spec: 0.0577 | Val Score: 0.3046
+Epoch 010 | loss: 0.2457 | AUC: 0.6745 | Val Spec@90Sens: 0.2995 | Val Sens@90Spec: 0.2380 | Val Score: 0.4040                      | Val AUC: 0.5334 | Val Spec@90Sens: 0.3029 | Val Sens@90Spec: 0.0769 | Val Score: 0.3044
+Epoch 011 | loss: 0.2388 | AUC: 0.6012 | Val Spec@90Sens: 0.1939 | Val Sens@90Spec: 0.2112 | Val Score: 0.3354                      | Val AUC: 0.7047 | Val Spec@90Sens: 0.3269 | Val Sens@90Spec: 0.2788 | Val Score: 0.4368
+Epoch 012 | loss: 0.2404 | AUC: 0.5794 | Val Spec@90Sens: 0.1992 | Val Sens@90Spec: 0.2246 | Val Score: 0.3344                      | Val AUC: 0.7074 | Val Spec@90Sens: 0.3317 | Val Sens@90Spec: 0.3365 | Val Score: 0.4585
+Epoch 013 | loss: 0.2418 | AUC: 0.6159 | Val Spec@90Sens: 0.1738 | Val Sens@90Spec: 0.2834 | Val Score: 0.3577                      | Val AUC: 0.6636 | Val Spec@90Sens: 0.1202 | Val Sens@90Spec: 0.3558 | Val Score: 0.3799
+Epoch 014 | loss: 0.2406 | AUC: 0.6481 | Val Spec@90Sens: 0.3142 | Val Sens@90Spec: 0.2032 | Val Score: 0.3885                      | Val AUC: 0.6706 | Val Spec@90Sens: 0.1250 | Val Sens@90Spec: 0.3462 | Val Score: 0.3806
+Epoch 015 | loss: 0.2449 | AUC: 0.5767 | Val Spec@90Sens: 0.2513 | Val Sens@90Spec: 0.1658 | Val Score: 0.3313                      | Val AUC: 0.6700 | Val Spec@90Sens: 0.1538 | Val Sens@90Spec: 0.3462 | Val Score: 0.3900
+Epoch 016 | loss: 0.2392 | AUC: 0.6021 | Val Spec@90Sens: 0.2540 | Val Sens@90Spec: 0.2086 | Val Score: 0.3549                      | Val AUC: 0.6898 | Val Spec@90Sens: 0.2356 | Val Sens@90Spec: 0.3462 | Val Score: 0.4238
+Epoch 017 | loss: 0.2363 | AUC: 0.6389 | Val Spec@90Sens: 0.3142 | Val Sens@90Spec: 0.1925 | Val Score: 0.3819                      | Val AUC: 0.6976 | Val Spec@90Sens: 0.3365 | Val Sens@90Spec: 0.3173 | Val Score: 0.4505
+Epoch 018 | loss: 0.2398 | AUC: 0.6129 | Val Spec@90Sens: 0.2660 | Val Sens@90Spec: 0.1738 | Val Score: 0.3509                      | Val AUC: 0.7084 | Val Spec@90Sens: 0.3173 | Val Sens@90Spec: 0.3365 | Val Score: 0.4541
+Epoch 019 | loss: 0.2451 | AUC: 0.5755 | Val Spec@90Sens: 0.1872 | Val Sens@90Spec: 0.1925 | Val Score: 0.3184                      | Val AUC: 0.6754 | Val Spec@90Sens: 0.1442 | Val Sens@90Spec: 0.3462 | Val Score: 0.3886
+Epoch 020 | loss: 0.2427 | AUC: 0.6339 | Val Spec@90Sens: 0.3195 | Val Sens@90Spec: 0.2246 | Val Score: 0.3927                      | Val AUC: 0.6886 | Val Spec@90Sens: 0.2019 | Val Sens@90Spec: 0.3462 | Val Score: 0.4122
+Epoch 021 | loss: 0.2435 | AUC: 0.5923 | Val Spec@90Sens: 0.2233 | Val Sens@90Spec: 0.2380 | Val Score: 0.3512                      | Val AUC: 0.6952 | Val Spec@90Sens: 0.2692 | Val Sens@90Spec: 0.3462 | Val Score: 0.4369
+Epoch 022 | loss: 0.2415 | AUC: 0.5754 | Val Spec@90Sens: 0.2045 | Val Sens@90Spec: 0.2326 | Val Score: 0.3375                      | Val AUC: 0.6936 | Val Spec@90Sens: 0.3413 | Val Sens@90Spec: 0.3269 | Val Score: 0.4540
+
+
+Results:
+
+AUC (micro-averaged): 0.7238
+
+Sensitivity @ 90% specificity: 0.3939
+
+Specificity @ 90% sensitivity: 0.2643
+
+Aggregated Score (used for leaderboard): 0.4607
